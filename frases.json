@@ -1,0 +1,36 @@
+[
+  { "autor": "Jorge Luis Borges", "texto": "Siempre imaginé que el paraíso sería algún tipo de biblioteca." },
+  { "autor": "Jorge Luis Borges", "texto": "Uno está enamorado cuando se da cuenta de que otra persona es única." },
+  { "autor": "Jorge Luis Borges", "texto": "La duda es uno de los nombres de la inteligencia." },
+
+  { "autor": "Julio Cortázar", "texto": "Nada está perdido si se tiene el valor de proclamar que todo está perdido." },
+  { "autor": "Julio Cortázar", "texto": "Andábamos sin buscarnos, pero sabiendo que andábamos para encontrarnos." },
+  { "autor": "Julio Cortázar", "texto": "La explicación es un error bien vestido." },
+
+  { "autor": "Roberto Fontanarrosa", "texto": "No soy un pesimista, soy un optimista mal informado." },
+  { "autor": "Roberto Fontanarrosa", "texto": "El fútbol es lo más importante de las cosas menos importantes." },
+  { "autor": "Roberto Fontanarrosa", "texto": "Hay cosas que no se pueden explicar, solo sentir." },
+
+  { "autor": "Quino", "texto": "Paren el mundo, que me quiero bajar." },
+  { "autor": "Quino", "texto": "Lo urgente no deja tiempo para lo importante." },
+  { "autor": "Mafalda (Quino)", "texto": "Como siempre, lo urgente no deja tiempo para lo importante." },
+
+  { "autor": "Atahualpa Yupanqui", "texto": "El hombre es tierra que anda." },
+  { "autor": "Atahualpa Yupanqui", "texto": "Las penas son de nosotros, las vaquitas son ajenas." },
+  { "autor": "Atahualpa Yupanqui", "texto": "Caminante no hay camino, se hace camino al andar." },
+
+  { "autor": "María Elena Walsh", "texto": "El que no se anima a volar, se queda mirando." },
+  { "autor": "María Elena Walsh", "texto": "La libertad es una costumbre." },
+
+  { "autor": "Osvaldo Soriano", "texto": "La nostalgia es la censura de la memoria." },
+  { "autor": "Osvaldo Soriano", "texto": "Uno siempre vuelve a los lugares donde fue feliz." },
+
+  { "autor": "Ernesto Sabato", "texto": "Es tan corto el amor y tan largo el olvido." },
+  { "autor": "Ernesto Sabato", "texto": "Nada grande se hace sin pasión." },
+
+  { "autor": "Alejandro Dolina", "texto": "La vida es corta, pero el día es largo." },
+  { "autor": "Alejandro Dolina", "texto": "El amor es una forma de coraje." },
+
+  { "autor": "Fito Páez", "texto": "El tiempo es un efecto fugaz." },
+  { "autor": "Luis Alberto Spinetta", "texto": "Mañana es mejor." }
+]
