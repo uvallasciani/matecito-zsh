@@ -4,10 +4,10 @@
 # Opción para deshabilitar todo
 [[ "$MATECITO_DISABLE" == "true" ]] && return
 
-# =========================
-# Paths del plugin
-# =========================
-PLUGIN_DIR="${0:A:h}"
+# ===========================
+# Paths del plugin (Zsh-safe)
+# ===========================
+PLUGIN_DIR="${0:h}"
 FRASES_FILE="$PLUGIN_DIR/frases.json"
 
 # Cache
