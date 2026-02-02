@@ -14,7 +14,7 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [v0.1.0] - 2026-02-02
+## [v0.1.0] - 2026-01-30
 ### Added
 - Initial public release
 - Display a random quote from Argentine authors on shell startup
