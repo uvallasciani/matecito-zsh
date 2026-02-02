@@ -5,24 +5,30 @@
 [[ "$MATECITO_DISABLE" == "true" ]] && return
 
 # =========================
+# Paths del plugin
+# =========================
+PLUGIN_DIR="${0:A:h}"
+FRASES_FILE="$PLUGIN_DIR/frases.json"
+
+# Cache
+CACHE_DIR="$HOME/.cache/matecito-zsh"
+LAST_IDX_FILE="$CACHE_DIR/last_idx"
+mkdir -p "$CACHE_DIR"
+
+# =========================
 # Función principal
 # =========================
 matecito() {
-  PLUGIN_DIR="${0:A:h}"
-  FRASES_FILE="$PLUGIN_DIR/frases.json"
+  # jq es obligatorio
+  command -v jq >/dev/null || return
 
-  # Cache
-  CACHE_DIR="$HOME/.cache/matecito-zsh"
-  LAST_IDX_FILE="$CACHE_DIR/last_idx"
-  mkdir -p "$CACHE_DIR"
-
-  TOTAL=$(jq length "$FRASES_FILE")
-  [[ "$TOTAL" -eq 0 ]] && return
+  TOTAL=$(jq length "$FRASES_FILE" 2>/dev/null)
+  [[ -z "$TOTAL" || "$TOTAL" -eq 0 ]] && return
 
   IDX=$(( RANDOM % TOTAL ))
 
   if [[ -f "$LAST_IDX_FILE" ]]; then
-    LAST_IDX=$(cat "$LAST_IDX_FILE")
+    LAST_IDX=$(<"$LAST_IDX_FILE")
     while [[ "$IDX" == "$LAST_IDX" ]]; do
       IDX=$(( RANDOM % TOTAL ))
     done
