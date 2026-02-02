@@ -7,6 +7,13 @@ and this project follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.1.2] - 2026-02-02
+### Fixed
+- Reliable plugin directory detection in Oh My Zsh
+- Fixed syntax errors in frases.json
+
+---
+
 ## [v0.1.1] - 2026-02-02
 ### Fixed
 - Improved plugin path resolution to ensure `frases.json` is always found
