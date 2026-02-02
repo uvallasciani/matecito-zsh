@@ -62,7 +62,7 @@ git clone https://github.com/uvallasciani/matecito-zsh.git
 Editar `~/.zshrc` y agregar el plugin:
 
 ```zsh
-plugins=(git matecito-zsh)
+plugins=(matecito-zsh)
 ```
 
 Recargar la shell:
@@ -107,6 +107,7 @@ matecito-zsh/
 ├── matecito-zsh.plugin.zsh
 ├── frases.json
 ├── README.md
+├── CHANGELOG.md
 └── LICENSE
 ```
 
@@ -138,6 +139,12 @@ Se recomienda:
 > Simple, local, sin ruido.
 
 `matecito-zsh` no busca motivar ni optimizar: solo acompañar el inicio de la terminal con una buena frase.
+
+---
+
+## 📚 Documentación
+
+* [Changelog](CHANGELOG.md) — historial de cambios por versión
 
 ---
 
