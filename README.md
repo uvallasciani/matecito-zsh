@@ -29,24 +29,6 @@ Paren el mundo, que me quiero bajar. — Quino
 * **Oh My Zsh**
 * **jq**
 
-Instalar `jq`:
-
-* Debian / Ubuntu:
-
-  ```bash
-  sudo apt install jq
-  ```
-* Arch:
-
-  ```bash
-  sudo pacman -S jq
-  ```
-* Fedora:
-
-  ```bash
-  sudo dnf install jq
-  ```
-
 ---
 
 ## 🚀 Instalación
@@ -86,16 +68,6 @@ Alias opcional:
 
 ```zsh
 alias mate=matecito
-```
-
----
-
-## ⚙️ Configuración
-
-Desactivar completamente el plugin (por ejemplo en servidores):
-
-```zsh
-export MATECITO_DISABLE=true
 ```
 
 ---
