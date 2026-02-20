@@ -1,28 +1,47 @@
-# ============================
-# Matecito ZSH Plugin
-# ============================
+# ==============================================================================
+# Matecito ZSH Plugin - v1.0.0
+# ==============================================================================
 typeset -g MATECITO_LAST_INDEX=0
 typeset -ga matecito_phrases=()
 
-# ---------- Config ----------
+# ---------- Configuration & Persistence ----------
 MATECITO_CONFIG="$HOME/.matecitorc"
 MATECITO_PLUGIN_DIR="${0:A:h}"
 MATECITO_PHRASES_DIR="$MATECITO_PLUGIN_DIR/phrases"
 
+# [Pro Tip] Auto-generate config file if missing
+if [[ ! -f "$MATECITO_CONFIG" ]]; then
+  cat <<'EOF' > "$MATECITO_CONFIG"
+# matecito-zsh configuration
+# ---------------------------------------------------------
+# Set your preferred languages (e.g., "es en")
+# Leave empty for auto-detection based on $LANG.
+MATECITO_LANGS=""
+
+# Set your preferred countries (e.g., "ar co uy")
+# Leave empty for auto-detection. Use "all" for everything.
+MATECITO_COUNTRIES=""
+EOF
+  print "\e[1;32mMatecito:\e[0m Configuration file created at \e[3m~/.matecitorc\e[0m "
+fi
+
 # ---------- Setup Functions ----------
+
 _matecito_detect_locale() {
   local locale="${LANG:-en_US}"
-  locale="${locale%%.*}"
+  locale="${locale%%.*}" # Remove .UTF-8 etc.
 
-  DETECT_LANG="${${locale%%_*}#*:l}"     # Extrae idioma y pasa a minúscula
-  DETECT_COUNTRY="${${locale##*_}#*:l}"  # Extrae país y pasa a minúscula
+  # Extract and force lowercase for path compatibility
+  local lang_raw="${locale%%_*}"
+  local country_raw="${locale##*_}"
+  
+  DETECT_LANG="${lang_raw:l}"
+  DETECT_COUNTRY="${country_raw:l}"
 }
 
 _matecito_parse_list() {
   local input="$1"
   local -a result exclude
-
-  # Usamos split nativo de Zsh en lugar de cambiar el IFS
   local items=(${(s:,:)input})
 
   for item in "${items[@]}"; do
@@ -33,31 +52,27 @@ _matecito_parse_list() {
     fi
   done
 
-  # Aplicar exclusiones
   for ex in "${exclude[@]}"; do
     result=("${(@)result:#$ex}")
   done
 
-  # Devolver array como un string separado por espacios (seguro en este contexto sin espacios)
   echo "${result[@]}"
 }
 
 _matecito_load_phrases() {
-  # Reiniciar arreglo por si se recarga manualmente
   matecito_phrases=()
 
-  # 1. Resolver Idiomas
+  # 1. Resolve Languages
   local -a langs
   if [[ -z "$MATECITO_LANGS" ]]; then
     langs=("$DETECT_LANG")
   elif [[ "$MATECITO_LANGS" == "all" ]]; then
-    # Glob nativo: Solo directorios (/), sin error si vacío (N), solo nombre (:t)
     langs=("$MATECITO_PHRASES_DIR"/*(/N:t))
   else
     langs=($(_matecito_parse_list "$MATECITO_LANGS"))
   fi
 
-  # 2. Cargar archivos por idioma resuelto
+  # 2. Load countries per language
   for lang in "${langs[@]}"; do
     [[ ! -d "$MATECITO_PHRASES_DIR/$lang" ]] && continue
 
@@ -65,15 +80,13 @@ _matecito_load_phrases() {
     if [[ -z "$MATECITO_COUNTRIES" ]]; then
       countries=("$DETECT_COUNTRY")
     elif [[ "$MATECITO_COUNTRIES" == "all" ]]; then
-      # Glob nativo: Archivos regulares (.), terminados en .zsh, extraer nombre sin extensión (:t:r)
       countries=("$MATECITO_PHRASES_DIR/$lang"/*.zsh(.N:t:r))
     else
       countries=($(_matecito_parse_list "$MATECITO_COUNTRIES"))
     fi
 
-    # Cargar archivos de los países resueltos
     for country in "${countries[@]}"; do
-      local file="$MATECITO_PHRASES_DIR/$lang/$country.zsh"
+      local file="$MATECITO_PHRASES_DIR/$lang/${country:l}.zsh"
       [[ -f "$file" ]] && source "$file"
     done
   done
@@ -86,9 +99,10 @@ _matecito_init() {
 }
 
 # ---------- Main Function ----------
+
 matecito() {
-  # Si el usuario pasa un flag de recarga, forzamos releer todo
-  if [[ "$1" == "--reload" ]]; then
+  # If phrases are empty (file was deleted or error), re-init
+  if (( ${#matecito_phrases[@]} == 0 )) || [[ "$1" == "--reload" ]]; then
     _matecito_init
   fi
 
@@ -107,20 +121,15 @@ matecito() {
   fi
 
   MATECITO_LAST_INDEX=$index
-
   local entry="${matecito_phrases[$index]}"
   local quote="${entry%%|*}"
   local author="${entry##*|}"
 
-# Salida compacta con colores
   print
   print "\e[3;32m$quote\e[0m — \e[1m$author\e[0m"
 }
 
-# ---------- Auto-run on shell start ----------
-# Inicializamos silenciosamente al abrir la terminal
+# ---------- Auto-run ----------
 _matecito_init 
-# Imprimimos la primera frase
 matecito
-
 alias mate=matecito
