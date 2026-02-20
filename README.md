@@ -75,6 +75,7 @@ MATECITO_COUNTRIES="-us"
 
 # Forzar el idioma español
 MATECITO_LANGS="es"
+```
 
 ---
 
