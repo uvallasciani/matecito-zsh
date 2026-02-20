@@ -2,42 +2,28 @@
 # Matecito ZSH Plugin
 # ============================
 typeset -g MATECITO_LAST_INDEX=0
+typeset -ga matecito_phrases=()
 
 # ---------- Config ----------
 MATECITO_CONFIG="$HOME/.matecitorc"
 MATECITO_PLUGIN_DIR="${0:A:h}"
 MATECITO_PHRASES_DIR="$MATECITO_PLUGIN_DIR/phrases"
 
-# ---------- Init array ----------
-typeset -ga matecito_phrases
-matecito_phrases=()
-
-# ---------- Load config ----------
-load_config() {
-  if [[ -f "$MATECITO_CONFIG" ]]; then
-    source "$MATECITO_CONFIG"
-  fi
-}
-
-# ---------- Detect system locale ----------
-detect_locale() {
+# ---------- Setup Functions ----------
+_matecito_detect_locale() {
   local locale="${LANG:-en_US}"
   locale="${locale%%.*}"
 
-  DETECT_LANG="${locale%%_*}"
-  DETECT_COUNTRY="${locale##*_}"
-
-  DETECT_LANG="${DETECT_LANG:l}"
-  DETECT_COUNTRY="${DETECT_COUNTRY:l}"
+  DETECT_LANG="${${locale%%_*}#*:l}"     # Extrae idioma y pasa a minúscula
+  DETECT_COUNTRY="${${locale##*_}#*:l}"  # Extrae país y pasa a minúscula
 }
 
-# ---------- Parse CSV with exclude support ----------
-parse_list() {
+_matecito_parse_list() {
   local input="$1"
-  local -a result
-  local -a exclude
+  local -a result exclude
 
-  IFS=',' read -A items <<< "$input"
+  # Usamos split nativo de Zsh en lugar de cambiar el IFS
+  local items=(${(s:,:)input})
 
   for item in "${items[@]}"; do
     if [[ "$item" == -* ]]; then
@@ -47,126 +33,94 @@ parse_list() {
     fi
   done
 
+  # Aplicar exclusiones
   for ex in "${exclude[@]}"; do
     result=("${(@)result:#$ex}")
   done
 
+  # Devolver array como un string separado por espacios (seguro en este contexto sin espacios)
   echo "${result[@]}"
 }
 
-# ---------- Resolve languages ----------
-resolve_languages() {
-  local -a langs
+_matecito_load_phrases() {
+  # Reiniciar arreglo por si se recarga manualmente
+  matecito_phrases=()
 
+  # 1. Resolver Idiomas
+  local -a langs
   if [[ -z "$MATECITO_LANGS" ]]; then
     langs=("$DETECT_LANG")
   elif [[ "$MATECITO_LANGS" == "all" ]]; then
-    langs=("${(@f)$(ls -1 "$MATECITO_PHRASES_DIR")}")
+    # Glob nativo: Solo directorios (/), sin error si vacío (N), solo nombre (:t)
+    langs=("$MATECITO_PHRASES_DIR"/*(/N:t))
   else
-    langs=($(parse_list "$MATECITO_LANGS"))
+    langs=($(_matecito_parse_list "$MATECITO_LANGS"))
   fi
 
-  echo "${langs[@]}"
-}
-
-# ---------- Resolve countries ----------
-resolve_countries() {
-  local lang="$1"
-  local -a countries
-
-  if [[ -z "$MATECITO_COUNTRIES" ]]; then
-    countries=("$DETECT_COUNTRY")
-  elif [[ "$MATECITO_COUNTRIES" == "all" ]]; then
-    countries=("${(@f)$(ls -1 "$MATECITO_PHRASES_DIR/$lang" 2>/dev/null | sed 's/\.zsh$//')}")
-  else
-    countries=($(parse_list "$MATECITO_COUNTRIES"))
-  fi
-
-  echo "${countries[@]}"
-}
-
-# ---------- Load phrase files ----------
-
-load_phrases() {
-  typeset -g matecito_phrases=()
-
-  local langs countries
-  langs=(${(s:,:)MATECITO_LANGS})
-  countries=(${(s:,:)MATECITO_COUNTRIES})
-
-  if [[ "$MATECITO_LANGS" == "all" ]]; then
-    langs=($(ls "$MATECITO_PHRASES_DIR"))
-  fi
-
-  for lang in $langs; do
+  # 2. Cargar archivos por idioma resuelto
+  for lang in "${langs[@]}"; do
     [[ ! -d "$MATECITO_PHRASES_DIR/$lang" ]] && continue
 
-    local available_countries=()
-    for file in "$MATECITO_PHRASES_DIR/$lang"/*.zsh; do
-      [[ -e "$file" ]] || continue
-      available_countries+=("${file:t:r}")
-    done
-
-    local final_countries=()
-
-    if [[ "$MATECITO_COUNTRIES" == "all" ]]; then
-      final_countries=("${available_countries[@]}")
+    local -a countries
+    if [[ -z "$MATECITO_COUNTRIES" ]]; then
+      countries=("$DETECT_COUNTRY")
+    elif [[ "$MATECITO_COUNTRIES" == "all" ]]; then
+      # Glob nativo: Archivos regulares (.), terminados en .zsh, extraer nombre sin extensión (:t:r)
+      countries=("$MATECITO_PHRASES_DIR/$lang"/*.zsh(.N:t:r))
     else
-      for c in $countries; do
-        if [[ "$c" == -* ]]; then
-          local exclude="${c#-}"
-          available_countries=(${available_countries:#$exclude})
-        else
-          final_countries+=("$c")
-        fi
-      done
-
-      if [[ ${#final_countries[@]} -eq 0 ]]; then
-        final_countries=("${available_countries[@]}")
-      fi
+      countries=($(_matecito_parse_list "$MATECITO_COUNTRIES"))
     fi
 
-    for country in $final_countries; do
+    # Cargar archivos de los países resueltos
+    for country in "${countries[@]}"; do
       local file="$MATECITO_PHRASES_DIR/$lang/$country.zsh"
       [[ -f "$file" ]] && source "$file"
     done
   done
 }
 
+_matecito_init() {
+  [[ -f "$MATECITO_CONFIG" ]] && source "$MATECITO_CONFIG"
+  _matecito_detect_locale
+  _matecito_load_phrases
+}
 
-# ---------- Print random ----------
+# ---------- Main Function ----------
 matecito() {
-  load_config
-  detect_locale
-  load_phrases
+  # Si el usuario pasa un flag de recarga, forzamos releer todo
+  if [[ "$1" == "--reload" ]]; then
+    _matecito_init
+  fi
 
-(( ${#matecito_phrases[@]} == 0 )) && return
+  (( ${#matecito_phrases[@]} == 0 )) && return
 
-local total=${#matecito_phrases[@]}
-local index
+  local total=${#matecito_phrases[@]}
+  local index
 
-if (( total == 1 )); then
-  index=1
-else
-  while :; do
-    index=$(( RANDOM % total + 1 ))
-    [[ $index -ne $MATECITO_LAST_INDEX ]] && break
-  done
-fi
+  if (( total == 1 )); then
+    index=1
+  else
+    while :; do
+      index=$(( RANDOM % total + 1 ))
+      [[ $index -ne $MATECITO_LAST_INDEX ]] && break
+    done
+  fi
 
-MATECITO_LAST_INDEX=$index
+  MATECITO_LAST_INDEX=$index
 
-local entry="${matecito_phrases[$index]}"
-local quote="${entry%%|*}"
-local author="${entry##*|}"
+  local entry="${matecito_phrases[$index]}"
+  local quote="${entry%%|*}"
+  local author="${entry##*|}"
 
-print
-print "$quote — $author"
-print
-
+# Salida compacta con colores
+  print
+  print "\e[3;32m$quote\e[0m — \e[1m$author\e[0m"
 }
 
 # ---------- Auto-run on shell start ----------
+# Inicializamos silenciosamente al abrir la terminal
+_matecito_init 
+# Imprimimos la primera frase
 matecito
 
 alias mate=matecito
