@@ -28,15 +28,35 @@ fi
 # ---------- Setup Functions ----------
 
 _matecito_detect_locale() {
-  local locale="${LANG:-en_US}"
-  locale="${locale%%.*}" # Remove .UTF-8 etc.
+  # 1. Capture LANG or fallback to empty
+  local locale="${LANG:-}"
 
-  # Extract and force lowercase for path compatibility
-  local lang_raw="${locale%%_*}"
-  local country_raw="${locale##*_}"
-  
+  # 2. Strip encoding suffix (e.g. .UTF-8)
+  local clean_locale="${locale%%.*}"
+
+  # 3. Split language and country
+  local lang_raw="${clean_locale%%_*}"
+  local country_raw="${clean_locale##*_}"
+
+  # 4. Normalize to lowercase
   DETECT_LANG="${lang_raw:l}"
   DETECT_COUNTRY="${country_raw:l}"
+
+  # 5. Fallback to "all" if locale is invalid, unknown or malformed
+  #    Triggers when:
+  #    - DETECT_LANG is empty
+  #    - locale is "posix"
+  #    - lang code is shorter than 2 chars (e.g. "c")
+  #    - lang contains non-alpha characters (e.g. "123", "??")
+  #    - lang equals country but no "_" was present (e.g. LANG=C)
+  if [[ -z "$DETECT_LANG" || \
+        "$DETECT_LANG" == "posix" || \
+        ${#DETECT_LANG} -lt 2 || \
+        ! "$DETECT_LANG" =~ ^[a-z]+$ || \
+        ( "$DETECT_LANG" == "$DETECT_COUNTRY" && "$clean_locale" != *_* ) ]]; then
+    DETECT_LANG="all"
+    DETECT_COUNTRY="all"
+  fi
 }
 
 _matecito_parse_list() {
@@ -62,40 +82,42 @@ _matecito_parse_list() {
 _matecito_load_phrases() {
   matecito_phrases=()
 
-  # 1. Resolve Languages
+  # 1. Resolve languages
   local -a langs
-  if [[ -z "$MATECITO_LANGS" ]]; then
-    langs=("$DETECT_LANG")
-  elif [[ "$MATECITO_LANGS" == "all" ]]; then
-    langs=("$MATECITO_PHRASES_DIR"/*(/N:t))
+  if [[ -z "$MATECITO_LANGS" || "$MATECITO_LANGS" == "all" ]]; then
+    for d in "$MATECITO_PHRASES_DIR"/*(N/); do
+      langs+=("${d:t}")
+    done
   else
     langs=($(_matecito_parse_list "$MATECITO_LANGS"))
   fi
 
-  # 2. Load countries per language
+  # 2. Resolve countries and load phrase files
   for lang in "${langs[@]}"; do
-    [[ ! -d "$MATECITO_PHRASES_DIR/$lang" ]] && continue
-
+    local lang_dir="$MATECITO_PHRASES_DIR/$lang"
+    [[ ! -d "$lang_dir" ]] && continue
     local -a countries
-    if [[ -z "$MATECITO_COUNTRIES" ]]; then
-      countries=("$DETECT_COUNTRY")
-    elif [[ "$MATECITO_COUNTRIES" == "all" ]]; then
-      countries=("$MATECITO_PHRASES_DIR/$lang"/*.zsh(.N:t:r))
+    if [[ -z "$MATECITO_COUNTRIES" || "$MATECITO_COUNTRIES" == "all" ]]; then
+      for f in "$lang_dir"/*.zsh(N.); do
+        countries+=("${f:t:r}")
+      done
     else
       countries=($(_matecito_parse_list "$MATECITO_COUNTRIES"))
     fi
-
     for country in "${countries[@]}"; do
-      local file="$MATECITO_PHRASES_DIR/$lang/${country:l}.zsh"
+      local file="$lang_dir/${country:l}.zsh"
       [[ -f "$file" ]] && source "$file"
     done
   done
 }
-
 _matecito_init() {
   [[ -f "$MATECITO_CONFIG" ]] && source "$MATECITO_CONFIG"
   _matecito_detect_locale
   _matecito_load_phrases
+print "Plugin dir: $MATECITO_PLUGIN_DIR"
+print "Phrases dir: $MATECITO_PHRASES_DIR"
+print "Lang: $DETECT_LANG / Country: $DETECT_COUNTRY"
+print "Phrases loaded: ${#matecito_phrases[@]}"
 }
 
 # ---------- Main Function ----------
@@ -126,7 +148,7 @@ matecito() {
   local author="${entry##*|}"
 
   print
-  print "\e[3;32m$quote\e[0m — \e[1m$author\e[0m"
+  print "\e[3;32m$quote\e[0m â€” \e[1m$author\e[0m"
 }
 
 # ---------- Auto-run ----------
