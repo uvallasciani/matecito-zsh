@@ -83,17 +83,7 @@ MATECITO_LANGS="es"
 
 Automático: Al abrir una terminal nueva, se muestra una frase automáticamente.
 
-Manual: Ejecuta `mate o matecito para ver una frase nueva en cualquier momento.
-
-```bash
-matecito
-```
-
-Alias:
-
-```bash
-mate
-```
+Manual: Ejecuta `mate` o `matecito` para ver una frase nueva en cualquier momento.
 
 ---
 
