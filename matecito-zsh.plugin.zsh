@@ -114,10 +114,12 @@ _matecito_init() {
   [[ -f "$MATECITO_CONFIG" ]] && source "$MATECITO_CONFIG"
   _matecito_detect_locale
   _matecito_load_phrases
-print "Plugin dir: $MATECITO_PLUGIN_DIR"
-print "Phrases dir: $MATECITO_PHRASES_DIR"
-print "Lang: $DETECT_LANG / Country: $DETECT_COUNTRY"
-print "Phrases loaded: ${#matecito_phrases[@]}"
+
+# Debug: uncomment to print plugin initialization info
+# print "Plugin dir: $MATECITO_PLUGIN_DIR"
+# print "Phrases dir: $MATECITO_PHRASES_DIR"
+# print "Lang: $DETECT_LANG / Country: $DETECT_COUNTRY"
+# print "Phrases loaded: ${#matecito_phrases[@]}"
 }
 
 # ---------- Main Function ----------
@@ -148,7 +150,8 @@ matecito() {
   local author="${entry##*|}"
 
   print
-  print "\e[3;32m$quote\e[0m â€” \e[1m$author\e[0m"
+  print "\e[3;32m$quote\e[0m — \e[1m$author\e[0m"
+
 }
 
 # ---------- Auto-run ----------
