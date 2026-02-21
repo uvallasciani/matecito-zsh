@@ -4,18 +4,18 @@ Un plugin simple y minimalista para **Oh My Zsh** que muestra, al iniciar la ter
 
 ---
 
-## ✨ Características
+## Características
 
-* 🚀 **Carga Nativa:** Las frases se cargan directamente desde scripts `.zsh`, lo que mejora el rendimiento al abrir la terminal.
-* 🌎 **Multicultural:** Soporte modular para múltiples países (Argentina, Chile, Uruguay, Colombia, Perú, Venezuela, USA, UK, entre otros).
-* 🧠 **Detección Automática:** El plugin identifica el idioma y país de tu sistema operativo para mostrarte frases locales por defecto.
-* 🔁 **Inteligente:** Evita repetir la misma frase de forma consecutiva.
-* 🧠 **Ligero:** Se ejecuta solo **una vez por sesión** para no generar ruido visual.
-* ⌨️ **Comando Manual:** Accede a una frase en cualquier momento con el comando `mate` o `matecito`.
+* **Carga Nativa:** Las frases se cargan directamente desde scripts `.zsh`, lo que mejora el rendimiento al abrir la terminal.
+* **Multicultural:** Soporte modular para múltiples países (Argentina, Chile, Uruguay, Colombia, Perú, Venezuela, USA, UK, entre otros).
+* **Detección Automática:** El plugin identifica el idioma y país de tu sistema operativo para mostrarte frases locales por defecto.
+* **Inteligente:** Evita repetir la misma frase de forma consecutiva.
+* **Ligero:** Se ejecuta solo **una vez por sesión** para no generar ruido visual.
+* **Comando Manual:** Accede a una frase en cualquier momento con el comando `mate` o `matecito`.
 
 ---
 
-## 📸 Ejemplo
+## Ejemplo
 
 ```
 Paren el mundo, que me quiero bajar. — Quino
@@ -23,14 +23,14 @@ Paren el mundo, que me quiero bajar. — Quino
 
 ---
 
-## 📦 Requisitos
+## Requisitos
 
 * **zsh**
 * **Oh My Zsh**
 
 ---
 
-## 🚀 Instalación
+## Instalación
 
 Clonar el repositorio dentro de los plugins personalizados de Oh My Zsh:
 
@@ -43,7 +43,7 @@ git clone https://github.com/uvallasciani/matecito-zsh.git
 Editar `~/.zshrc` y agregar el plugin:
 
 ```zsh
-plugins=(matecito-zsh)
+plugins=(... matecito-zsh)
 ```
 
 Recargar la shell:
@@ -54,9 +54,9 @@ exec zsh
 
 ---
 
-## ⚙️ Configuración (Opcional)
+## Configuración (Opcional)
 
-Puedes personalizar el comportamiento del plugin definiendo estas variables en tu `~/.zshrc`:
+Puedes personalizar el comportamiento del plugin definiendo estas variables en tu `~/.matecitorc`:
 
 ### Filtrado por Países y Lenguajes
 Usa `MATECITO_LANGS` y `MATECITO_COUNTRIES` para elegir qué bibliotecas cargar.
@@ -79,7 +79,7 @@ MATECITO_LANGS="es"
 
 ---
 
-## ☕ Uso
+## Uso
 
 Automático: Al abrir una terminal nueva, se muestra una frase automáticamente.
 
@@ -87,7 +87,7 @@ Manual: Ejecuta `mate` o `matecito` para ver una frase nueva en cualquier moment
 
 ---
 
-## 🗂️ Estructura del proyecto
+## Estructura del proyecto
 
 ```
 matecito-zsh/
@@ -102,7 +102,7 @@ matecito-zsh/
 
 ---
 
-## 📚 Frases y Contribuciones
+## Frases y Contribuciones
 
 Las frases se organizan en archivos `.zsh` por código de país (ISO 3166-1 alpha-2) dentro de `phrases/` para una carga instantánea.
 
@@ -123,7 +123,7 @@ Se recomienda:
 
 ---
 
-## 🧠 Filosofía
+## Filosofía
 
 > **"Un respiro literario entre comandos."**
 
@@ -131,12 +131,12 @@ Se recomienda:
 
 ---
 
-## 📚 Documentación y Cambios
+## Documentación y Cambios
 * [Changelog](CHANGELOG.md) — Historial de versiones y mejoras técnicas.
 
 ---
 
-## 📄 Licencia
+## Licencia
 Este proyecto está bajo la licencia **GNU General Public License v3.0**.
 
 ---
