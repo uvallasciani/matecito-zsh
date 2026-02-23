@@ -81,35 +81,41 @@ _matecito_parse_list() {
 
 _matecito_load_phrases() {
   matecito_phrases=()
-
-  # 1. Resolve languages
+  
+  # 1. Resolver lenguajes (Si está vacío, usar el detectado)
   local -a langs
-  if [[ -z "$MATECITO_LANGS" || "$MATECITO_LANGS" == "all" ]]; then
-    for d in "$MATECITO_PHRASES_DIR"/*(N/); do
-      langs+=("${d:t}")
-    done
-  else
+  if [[ -n "$MATECITO_LANGS" ]]; then
     langs=($(_matecito_parse_list "$MATECITO_LANGS"))
+  else
+    langs=("$DETECT_LANG")
   fi
 
-  # 2. Resolve countries and load phrase files
+  # 2. Resolver países y cargar
   for lang in "${langs[@]}"; do
     local lang_dir="$MATECITO_PHRASES_DIR/$lang"
     [[ ! -d "$lang_dir" ]] && continue
+    
     local -a countries
-    if [[ -z "$MATECITO_COUNTRIES" || "$MATECITO_COUNTRIES" == "all" ]]; then
-      for f in "$lang_dir"/*.zsh(N.); do
-        countries+=("${f:t:r}")
-      done
-    else
+    if [[ -n "$MATECITO_COUNTRIES" ]]; then
       countries=($(_matecito_parse_list "$MATECITO_COUNTRIES"))
+    else
+      countries=("$DETECT_COUNTRY")
     fi
+
     for country in "${countries[@]}"; do
-      local file="$lang_dir/${country:l}.zsh"
-      [[ -f "$file" ]] && source "$file"
+      # Si es "all", cargamos todo el directorio del idioma
+      if [[ "$country" == "all" ]]; then
+        for f in "$lang_dir"/*.zsh(N.); do
+          source "$f"
+        done
+      else
+        local file="$lang_dir/${country:l}.zsh"
+        [[ -f "$file" ]] && source "$file"
+      fi
     done
   done
 }
+
 _matecito_init() {
   [[ -f "$MATECITO_CONFIG" ]] && source "$MATECITO_CONFIG"
   _matecito_detect_locale
