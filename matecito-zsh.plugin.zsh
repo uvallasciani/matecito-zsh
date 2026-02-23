@@ -9,9 +9,10 @@ MATECITO_CONFIG="$HOME/.matecitorc"
 MATECITO_PLUGIN_DIR="${0:A:h}"
 MATECITO_PHRASES_DIR="$MATECITO_PLUGIN_DIR/phrases"
 
-# [Pro Tip] Auto-generate config file if missing
+# ---------- Auto-generate config file if missing ----------
 if [[ ! -f "$MATECITO_CONFIG" ]]; then
   cat <<'EOF' > "$MATECITO_CONFIG"
+
 # matecito-zsh configuration
 # ---------------------------------------------------------
 # Set your preferred languages (e.g., "es en")
@@ -82,7 +83,7 @@ _matecito_parse_list() {
 _matecito_load_phrases() {
   matecito_phrases=()
   
-  # 1. Resolver lenguajes (Si está vacío, usar el detectado)
+  # 1. Resolve languages ​​(If empty, use the detected one)
   local -a langs
   if [[ -n "$MATECITO_LANGS" ]]; then
     langs=($(_matecito_parse_list "$MATECITO_LANGS"))
@@ -90,7 +91,7 @@ _matecito_load_phrases() {
     langs=("$DETECT_LANG")
   fi
 
-  # 2. Resolver países y cargar
+  # 2. Resolve countries and load
   for lang in "${langs[@]}"; do
     local lang_dir="$MATECITO_PHRASES_DIR/$lang"
     [[ ! -d "$lang_dir" ]] && continue
@@ -103,7 +104,7 @@ _matecito_load_phrases() {
     fi
 
     for country in "${countries[@]}"; do
-      # Si es "all", cargamos todo el directorio del idioma
+      # If it's "all", we load the entire language directory.
       if [[ "$country" == "all" ]]; then
         for f in "$lang_dir"/*.zsh(N.); do
           source "$f"
