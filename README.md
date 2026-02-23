@@ -50,7 +50,7 @@ Optional settings in `~/.matecitorc`:
 ```zsh
 MATECITO_COUNTRIES="ar,cl,py"   # specific countries
 MATECITO_COUNTRIES="all"        # all available
-MATECITO_COUNTRIES="-us"        # all except one
+MATECITO_COUNTRIES="all,-us"<    # all except one
 MATECITO_LANGS="es"             # force language
 ```
 
