@@ -15,9 +15,7 @@ Oh My Zsh plugin that detects your language and country to display quotes from l
 
 ## Example
 
-```
-We are all in the gutter, but some of us are looking at the stars. — Oscar Wilde
-```
+![matecito demo](demo.gif)
 
 ## Requirements
 
