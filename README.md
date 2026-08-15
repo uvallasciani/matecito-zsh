@@ -1,54 +1,121 @@
-# 🧉 matecito-zsh
+# 🧉 Matecito
 
-> A literary breath between commands.
+> **Because every day deserves a good first line.**
+>
+> *Inspired by the tradition of sharing a mate and a conversation.*
 
-Matecito is an Oh My Zsh plugin that greets each terminal session with a quote from a local author. Quotes are automatically selected according to your system locale, providing a lightweight and completely offline experience.
+Every morning I start my day with mate.
+
+I wanted the first thing that appeared in my terminal to be something worth reading before the first command of the day.
+
+At first, Matecito displayed quotes from Argentine authors. Later, I realized that anyone should be able to enjoy the same experience, regardless of where they live or what language they speak.
+
+That simple idea became **Matecito**.
+
+Matecito is a native Zsh plugin that displays quotes and thoughts from people around the world.
+
+It is simple, works completely offline, has no external dependencies, and is designed to make the first moment in your terminal a little more special.
 
 ## Features
 
-- 🌎 **Automatic locale detection** — Determines your language and country from your system locale.
-- 📚 **Localized quotes** — Displays literature from authors relevant to your language and region.
-- 🔁 **No repetition** — Avoids showing the same quote twice in a row.
-- 🚀 **Minimal startup overhead** — Loads quotes directly from native `.zsh` files.
-- 🔇 **Once per session** — Runs automatically without cluttering your terminal.
-- 🖐️ **Manual command** — Run `mate` or `matecito` anytime to display another quote.
-- 🧩 **Modular architecture** — Easily extendable with new languages and countries.
+- 🌎 Automatic locale detection
+- 🌍 Quotes from around the world
+- 🔁 No repetition
+- 🖐️ Manual command
+- ⚡ Lightweight and native
+- 📡 Completely offline
+- 🔌 Framework independent
 
 ## Example
 
 ![matecito demo](demo.gif)
 
----
+## Compatibility
 
-# Installation
+Matecito is a native Zsh plugin and does not depend on any specific framework.
 
-Clone the repository into your Oh My Zsh custom plugins directory:
+| Environment | Status |
+| :---------- | :----: |
+| Plain Zsh   |   ✅   |
+| Oh My Zsh   |   ✅   |
+| Zinit       |   ✅   |
 
-```bash
-cd ~/.oh-my-zsh/custom/plugins
-git clone https://github.com/uvallasciani/matecito-zsh.git
-```
+## Installation
 
-Enable the plugin in your `~/.zshrc`:
+### Plain Zsh
+
+Clone the repository:
 
 ```zsh
-plugins=(... matecito-zsh)
+git clone https://github.com/uvallasciani/matecito-zsh.git ~/.matecito
 ```
 
-Reload your shell:
+Add the plugin to your `.zshrc`:
 
-```bash
+```zsh
+source ~/.matecito/matecito.plugin.zsh
+```
+
+Restart your shell:
+
+```zsh
 exec zsh
 ```
 
----
+### Oh My Zsh
 
-# Requirements
+Clone the repository into your custom plugins directory:
 
-- zsh
-- Oh My Zsh
+```zsh
+git clone https://github.com/uvallasciani/matecito-zsh.git \
+${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/matecito
+```
 
-## System locale
+Add `matecito` to the plugins list in your `.zshrc`:
+
+```zsh
+plugins=(... matecito)
+```
+
+Restart your shell:
+
+```zsh
+exec zsh
+```
+
+### Zinit
+
+Add the following line to your `.zshrc`:
+
+```zsh
+zinit light uvallasciani/matecito-zsh
+```
+
+Restart your shell:
+
+```zsh
+exec zsh
+```
+
+## Usage
+
+Matecito automatically displays a quote when you start a new interactive shell.
+
+You can display another quote at any time by running:
+
+```zsh
+matecito
+```
+
+You can also use the shorter command:
+
+```zsh
+mate
+```
+
+## Localization
+
+### System locale
 
 Matecito relies on your operating system locale to determine which language and country should be used.
 
@@ -59,15 +126,9 @@ LANG=es_AR.UTF-8
 LANG=en_US.UTF-8
 ```
 
-A properly configured locale is required for automatic detection.
+Automatic detection requires a properly configured system locale.
 
----
-
-# How locale detection works
-
-Matecito does not guess your language or your location.
-
-Instead, it follows standard Unix/Linux conventions by using your system locale as the authoritative source of information.
+Matecito does not guess your language or your location. Instead, it follows standard Unix/Linux conventions by using your system locale as the authoritative source of information.
 
 This keeps Matecito consistent with the rest of your shell and operating system.
 
@@ -77,25 +138,33 @@ If your system uses the default locale:
 LANG=C
 ```
 
-or
+or:
 
 ```text
 LANG=C.UTF-8
 ```
 
-Matecito cannot determine your preferred language automatically because those locales intentionally do not specify any language or country.
+Matecito cannot determine your preferred language automatically because these locales intentionally do not specify a language or country.
 
 This is expected behavior.
 
-Many minimal Linux installations and containers use `C.UTF-8` by default.
+Configure your preferred locale, for example:
 
-Configure your preferred locale (for example `es_AR.UTF-8` or `en_US.UTF-8`) to enable automatic language detection.
+```text
+es_AR.UTF-8
+```
+
+or:
+
+```text
+en_US.UTF-8
+```
+
+to enable automatic language and country detection.
 
 > **Note:** Automatic generation of `~/.matecitorc` from the detected locale is planned for a future release.
 
----
-
-# Configuration
+### Configuration
 
 You can customize or override the automatically detected settings by editing:
 
@@ -103,56 +172,32 @@ You can customize or override the automatically detected settings by editing:
 ~/.matecitorc
 ```
 
-Example:
+For example:
 
 ```zsh
 MATECITO_COUNTRIES="ar,cl,uy"
-MATECITO_COUNTRIES="all"
-MATECITO_COUNTRIES="all,-us"
+```
 
+Limit the quote selection to specific countries.
+
+```zsh
+MATECITO_COUNTRIES="all"
+```
+
+Allow quotes from all available countries.
+
+```zsh
+MATECITO_COUNTRIES="all,-us"
+```
+
+Allow quotes from all countries except the United States.
+
+You can also limit the languages:
+
+```zsh
 MATECITO_LANGS="es"
 ```
 
----
+## License
 
-# Contributing
-
-Phrase files are organized as:
-
-```text
-phrases/
-└── <language>/
-    └── <country>.zsh
-```
-
-Where:
-
-- `<language>` is an ISO 639-1 language code (`es`, `en`, `pt`, ...)
-- `<country>` is an ISO 3166-1 alpha-2 country code (`ar`, `cl`, `us`, ...)
-
-Example:
-
-```zsh
-matecito_phrases+=(
-  "In the midst of winter, I found there was, within me, an invincible summer.|Albert Camus"
-)
-```
-
-## Contribution guidelines
-
-Please follow these recommendations:
-
-- Keep quotes relatively short.
-- Always include the author's name.
-- Prefer literature, aphorisms, proverbs and culturally relevant quotations.
-- Avoid memes, advertisements, political slogans and copyrighted song lyrics.
-- Follow the existing directory structure.
-- Keep the style consistent with the rest of the project.
-
-Contributions adding new languages, countries and authors are always welcome.
-
----
-
-# License
-
-Licensed under the GNU General Public License v3.0.
+Licensed under the [GNU General Public License v3.0](LICENSE).
